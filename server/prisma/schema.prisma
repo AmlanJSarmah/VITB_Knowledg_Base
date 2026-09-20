@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProcessingStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id                 String          @id @default(uuid())
+  email              String          @unique
+  registrationNumber String?         @unique
+  name               String
+  questionPapers     QuestionPaper[]
+  notes              Note[]
+  books              Book[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model QuestionPaper {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseCode       String
+  year             Int
+  fileUrl          String
+  fileName         String
+  fileSize         Int
+  mimeType         String           @default("application/pdf")
+  processingStatus ProcessingStatus @default(PENDING)
+  chunks           DocumentChunk[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([courseCode, year])
+  @@index([courseCode])
+  @@map("question_papers")
+}
+
+model Note {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseCode       String
+  fileUrl          String
+  fileName         String
+  fileSize         Int
+  mimeType         String           @default("application/pdf")
+  processingStatus ProcessingStatus @default(PENDING)
+  chunks           DocumentChunk[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([courseCode])
+  @@map("notes")
+}
+
+model Book {
+  id               String           @id @default(uuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title            String
+  fileUrl          String
+  fileName         String
+  fileSize         Int
+  mimeType         String           @default("application/pdf")
+  processingStatus ProcessingStatus @default(PENDING)
+  chunks           DocumentChunk[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([title])
+  @@map("books")
+}
+
+model DocumentChunk {
+  id              String         @id @default(uuid())
+  questionPaperId String?
+  questionPaper   QuestionPaper? @relation(fields: [questionPaperId], references: [id], onDelete: Cascade)
+  noteId          String?
+  note            Note?          @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  bookId          String?
+  book            Book?          @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  chunkIndex      Int
+  pageNumber      Int?
+  content         String
+  tokenCount      Int?
+
+  createdAt DateTime @default(now())
+
+  @@index([questionPaperId])
+  @@index([noteId])
+  @@index([bookId])
+  @@map("document_chunks")
+}
