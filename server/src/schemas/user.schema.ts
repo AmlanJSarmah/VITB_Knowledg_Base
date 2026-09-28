@@ -1,8 +1,14 @@
 import { z } from "zod";
 
 export const createUserSchema = z.object({
-  name: z.string().trim().min(1, "Name is required"),
-  email: z.string().trim().email("Valid email address is required").toLowerCase(),
+  username: z
+    .string()
+    .trim()
+    .min(3, "Username must be at least 3 characters")
+    .max(30, "Username must not exceed 30 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  name: z.string().trim().min(1, "Name cannot be empty").optional(),
+  email: z.string().trim().email("Valid email address is required").toLowerCase().optional(),
   registrationNumber: z
     .string()
     .trim()
@@ -11,7 +17,7 @@ export const createUserSchema = z.object({
     .optional(),
 });
 
-export const updateUserSchema = createUserSchema.partial();
+export const updateUserSchema = createUserSchema.partial().omit({ password: true });
 
 export const userQuerySchema = z.object({
   search: z.string().trim().optional(),

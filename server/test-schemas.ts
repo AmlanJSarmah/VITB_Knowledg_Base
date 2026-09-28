@@ -29,6 +29,8 @@ console.log("--- Running Schema & Validation Tests ---\n");
 
 // 1. Test User Schema
 const validUserData = {
+  username: "ajsarmah",
+  password: "securePassword123",
   name: "Amlan Sarmah",
   email: "student@vitbhopal.ac.in",
   registrationNumber: "22BCI10001",
@@ -36,8 +38,8 @@ const validUserData = {
 const parsedUser = createUserSchema.safeParse(validUserData);
 assert(parsedUser.success, "Valid User parses successfully");
 
-const invalidUser = createUserSchema.safeParse({ name: "Amlan", email: "invalid-email" });
-assert(!invalidUser.success, "Invalid user email is rejected");
+const invalidUser = createUserSchema.safeParse({ username: "aj", password: "123" });
+assert(!invalidUser.success, "Invalid user with short username/password is rejected");
 
 // 2. Test QuestionPaper Schema
 const validQP = {

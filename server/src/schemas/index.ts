@@ -1,4 +1,5 @@
 export * from "./user.schema.js";
+export * from "./auth.schema.js";
 export * from "./question-paper.schema.js";
 export * from "./note.schema.js";
 export * from "./book.schema.js";
