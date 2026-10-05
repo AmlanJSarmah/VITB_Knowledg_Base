@@ -18,3 +18,6 @@ questionPaperRouter.get("/", QuestionPaperController.getQuestionPapers);
 
 // GET /api/question-papers/:id  — public
 questionPaperRouter.get("/:id", QuestionPaperController.getQuestionPaperById);
+
+// DELETE /api/question-papers/:id — authenticated, owner only
+questionPaperRouter.delete("/:id", authenticateToken, QuestionPaperController.deleteQuestionPaper);

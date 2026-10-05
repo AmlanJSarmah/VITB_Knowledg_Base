@@ -3,6 +3,7 @@ import fs from "fs";
 import prisma from "../lib/db.js";
 import { questionPaperQuerySchema } from "../schemas/question-paper.schema.js";
 import { z } from "zod";
+import path from "path";
 
 const uploadQuestionPaperBodySchema = z.object({
   courseCode: z
@@ -174,6 +175,30 @@ export const QuestionPaperController = {
       res.status(200).json({ data: questionPaper });
     } catch (error) {
       console.error("Error in getQuestionPaperById:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  // DELETE /api/question-papers/:id — owners may remove their resource
+  async deleteQuestionPaper(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+      }
+      const id = req.params["id"] as string;
+      const paper = await prisma.questionPaper.findFirst({ where: { id, userId: req.user.userId } });
+      if (!paper) {
+        res.status(404).json({ message: "Resource not found" });
+        return;
+      }
+      await prisma.questionPaper.delete({ where: { id: paper.id } });
+      const uploadsRoot = path.resolve(process.cwd(), "uploads", "question-papers");
+      const filePath = path.resolve(process.cwd(), paper.fileUrl.replace(/^\/+/, ""));
+      if (filePath.startsWith(`${uploadsRoot}${path.sep}`) && fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      res.status(200).json({ message: "Question paper deleted successfully" });
+    } catch (error) {
+      console.error("Error in deleteQuestionPaper:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   },

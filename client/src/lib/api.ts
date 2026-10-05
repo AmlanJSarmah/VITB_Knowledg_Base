@@ -59,12 +59,14 @@ export async function uploadQuestionPaper(
 export async function getQuestionPapers(params: {
   courseCode?: string;
   year?: number;
+  userId?: string;
   page?: number;
   limit?: number;
 }): Promise<PaginatedResponse<QuestionPaper>> {
   const qs = new URLSearchParams();
   if (params.courseCode) qs.set("courseCode", params.courseCode);
   if (params.year) qs.set("year", String(params.year));
+  if (params.userId) qs.set("userId", params.userId);
   if (params.page) qs.set("page", String(params.page));
   if (params.limit) qs.set("limit", String(params.limit));
   const res = await fetch(`${BASE}/question-papers?${qs}`);
@@ -98,11 +100,13 @@ export async function uploadNote(
 
 export async function getNotes(params: {
   courseCode?: string;
+  userId?: string;
   page?: number;
   limit?: number;
 }): Promise<PaginatedResponse<Note>> {
   const qs = new URLSearchParams();
   if (params.courseCode) qs.set("courseCode", params.courseCode);
+  if (params.userId) qs.set("userId", params.userId);
   if (params.page) qs.set("page", String(params.page));
   if (params.limit) qs.set("limit", String(params.limit));
   const res = await fetch(`${BASE}/notes?${qs}`);
@@ -136,14 +140,40 @@ export async function uploadBook(
 
 export async function getBooks(params: {
   title?: string;
+  userId?: string;
   page?: number;
   limit?: number;
 }): Promise<PaginatedResponse<Book>> {
   const qs = new URLSearchParams();
   if (params.title) qs.set("title", params.title);
+  if (params.userId) qs.set("userId", params.userId);
   if (params.page) qs.set("page", String(params.page));
   if (params.limit) qs.set("limit", String(params.limit));
   const res = await fetch(`${BASE}/books?${qs}`);
+  return handleResponse(res);
+}
+
+export async function deleteQuestionPaper(id: string): Promise<{ message: string }> {
+  const res = await fetch(`${BASE}/question-papers/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+  return handleResponse(res);
+}
+
+export async function deleteNote(id: string): Promise<{ message: string }> {
+  const res = await fetch(`${BASE}/notes/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+  return handleResponse(res);
+}
+
+export async function deleteBook(id: string): Promise<{ message: string }> {
+  const res = await fetch(`${BASE}/books/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
   return handleResponse(res);
 }
 

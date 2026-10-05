@@ -18,3 +18,6 @@ bookRouter.get("/", BookController.getBooks);
 
 // GET /api/books/:id  — public
 bookRouter.get("/:id", BookController.getBookById);
+
+// DELETE /api/books/:id — authenticated, owner only
+bookRouter.delete("/:id", authenticateToken, BookController.deleteBook);

@@ -3,6 +3,7 @@ import fs from "fs";
 import prisma from "../lib/db.js";
 import { noteQuerySchema } from "../schemas/note.schema.js";
 import { z } from "zod";
+import path from "path";
 
 const uploadNoteBodySchema = z.object({
   courseCode: z
@@ -165,6 +166,30 @@ export const NoteController = {
       res.status(200).json({ data: note });
     } catch (error) {
       console.error("Error in getNoteById:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  // DELETE /api/notes/:id — owners may remove their resource
+  async deleteNote(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+      }
+      const id = req.params["id"] as string;
+      const note = await prisma.note.findFirst({ where: { id, userId: req.user.userId } });
+      if (!note) {
+        res.status(404).json({ message: "Resource not found" });
+        return;
+      }
+      await prisma.note.delete({ where: { id: note.id } });
+      const uploadsRoot = path.resolve(process.cwd(), "uploads", "notes");
+      const filePath = path.resolve(process.cwd(), note.fileUrl.replace(/^\/+/, ""));
+      if (filePath.startsWith(`${uploadsRoot}${path.sep}`) && fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      res.status(200).json({ message: "Note deleted successfully" });
+    } catch (error) {
+      console.error("Error in deleteNote:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   },

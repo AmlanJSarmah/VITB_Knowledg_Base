@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -120,6 +121,7 @@ export const HomePage: React.FC = () => {
             <div><span className="font-bold text-slate-900 text-base leading-none">VIT Bhopal</span><span className="text-xs text-blue-600 block font-medium">Knowledge Base</span></div>
           </a>
           <div className="flex items-center gap-3 sm:gap-4">
+            <Link to="/accounts" className="text-sm font-semibold text-slate-600 hover:text-blue-700">My uploads</Link>
             <div className="hidden sm:flex items-center gap-2 text-sm text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200"><UserIcon className="h-3.5 w-3.5 text-blue-600" /><span className="font-medium text-slate-800">{user?.name || user?.username}</span>{user?.registrationNumber && <span className="text-xs text-slate-400 border-l border-slate-300 pl-2">{user.registrationNumber}</span>}</div>
             <Button variant="outline" size="sm" onClick={logout} className="text-slate-600 hover:text-red-600 hover:border-red-200"><LogOut className="h-4 w-4" /><span className="hidden sm:inline">Sign out</span></Button>
           </div>

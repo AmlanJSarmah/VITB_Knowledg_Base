@@ -5,6 +5,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { HomePage } from "./pages/HomePage";
+import { AccountsPage } from "./pages/AccountsPage";
 
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
@@ -48,6 +49,14 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute>
             <HomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/accounts"
+        element={
+          <ProtectedRoute>
+            <AccountsPage />
           </ProtectedRoute>
         }
       />

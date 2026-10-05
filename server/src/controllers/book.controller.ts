@@ -3,6 +3,7 @@ import fs from "fs";
 import prisma from "../lib/db.js";
 import { bookQuerySchema } from "../schemas/book.schema.js";
 import { z } from "zod";
+import path from "path";
 
 const uploadBookBodySchema = z.object({
   title: z.string().trim().min(1, "Book title is required"),
@@ -166,6 +167,30 @@ export const BookController = {
       res.status(200).json({ data: book });
     } catch (error) {
       console.error("Error in getBookById:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  // DELETE /api/books/:id — owners may remove their resource
+  async deleteBook(req: Request, res: Response): Promise<void> {
+    try {
+      if (!req.user) {
+        res.status(401).json({ message: "Unauthorized" });
+        return;
+      }
+      const id = req.params["id"] as string;
+      const book = await prisma.book.findFirst({ where: { id, userId: req.user.userId } });
+      if (!book) {
+        res.status(404).json({ message: "Resource not found" });
+        return;
+      }
+      await prisma.book.delete({ where: { id: book.id } });
+      const uploadsRoot = path.resolve(process.cwd(), "uploads", "books");
+      const filePath = path.resolve(process.cwd(), book.fileUrl.replace(/^\/+/, ""));
+      if (filePath.startsWith(`${uploadsRoot}${path.sep}`) && fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      res.status(200).json({ message: "Book deleted successfully" });
+    } catch (error) {
+      console.error("Error in deleteBook:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   },

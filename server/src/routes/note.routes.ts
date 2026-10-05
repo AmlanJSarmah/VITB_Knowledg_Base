@@ -18,3 +18,6 @@ noteRouter.get("/", NoteController.getNotes);
 
 // GET /api/notes/:id  — public
 noteRouter.get("/:id", NoteController.getNoteById);
+
+// DELETE /api/notes/:id — authenticated, owner only
+noteRouter.delete("/:id", authenticateToken, NoteController.deleteNote);
