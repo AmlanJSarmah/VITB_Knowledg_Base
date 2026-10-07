@@ -7,6 +7,7 @@ import { authRouter } from './routes/auth.routes.js';
 import { questionPaperRouter } from './routes/question-paper.routes.js';
 import { noteRouter } from './routes/note.routes.js';
 import { bookRouter } from './routes/book.routes.js';
+import { chatRouter } from './routes/chat.routes.js';
 import { ensureDirectoryExists } from './middleware/upload.middleware.js';
 
 dotenv.config();
@@ -37,6 +38,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/question-papers', questionPaperRouter);
 app.use('/api/notes', noteRouter);
 app.use('/api/books', bookRouter);
+app.use('/api/chat', chatRouter);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {

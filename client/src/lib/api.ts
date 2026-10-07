@@ -177,6 +177,33 @@ export async function deleteBook(id: string): Promise<{ message: string }> {
   return handleResponse(res);
 }
 
+// ── AI Tutor ────────────────────────────────────────────────────────────────
+
+export interface TutorMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface TutorSource {
+  category: string;
+  source: string;
+  page: number;
+  distance: number;
+}
+
+export async function askTutor(payload: {
+  question: string;
+  history: TutorMessage[];
+  categories?: string[];
+}): Promise<{ answer: string; sources: TutorSource[] }> {
+  const res = await fetch(`${BASE}/chat/query`, {
+    method: "POST",
+    headers: { ...authHeaders(), "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  return handleResponse(res);
+}
+
 // ── Utilities ────────────────────────────────────────────────────────────────
 
 export function formatFileSize(bytes: number): string {

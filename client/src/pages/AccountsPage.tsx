@@ -61,9 +61,11 @@ export const AccountsPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [user?.id]);
+  }, [user]);
 
-  useEffect(() => { void loadResources(); }, [loadResources]);
+  useEffect(() => {
+    void Promise.resolve().then(loadResources);
+  }, [loadResources]);
 
   const removeResource = async (resource: OwnedResource) => {
     const name = resource.kind === "books" ? resource.title : resource.fileName;
